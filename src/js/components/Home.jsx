@@ -1,26 +1,92 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import { ListBox } from "./ListBox";
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
-
-//create your first component
 const Home = () => {
+
+	const [state, setState] = useState({name: "", todos: []})
+	const [task, setTask] = useState("")
+
+	const getTodos = async () =>{
+		try {
+			const response = await fetch('https://playground.4geeks.com/todo/users/otazzu')
+			const data = await response.json()
+			console.log(data)
+			setState(data)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	const onChange = (event)=>{
+		setTask(event.target.value)
+	}
+
+	const onKeyDown = async (event) => {
+		if (event.keyCode === 13){
+			if(task.trim() === "" ) {
+				event.target.value = ("")//Para limpar el input en caso de poner espacios
+				alert("Valor incorrecto, por favor añada una tarea.")
+				return;
+			}
+			const tarea = await createTodo(task)
+			setTask(tarea)
+			event.target.value = ("")// Volver a limpiar el input al dar enter
+		}
+	}
+
+	const createTodo = async (task) => {
+		try {
+			const response = await fetch ('https://playground.4geeks.com/todo/todos/otazzu',{
+				method: 'POST',
+				headers: {
+					'Content-Type':'application/json'
+				},
+				body: JSON.stringify({
+					"label": task,
+					"is_done": false
+				})
+			});
+
+		if(response.status === 201){
+			getTodos();
+		}
+
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	const deleteTodo = async (todoId) => {
+		console.log(todoId)
+		try {
+			const response = await fetch (`https://playground.4geeks.com/todo/todos/${todoId}`, {
+				method: "DELETE"
+			});
+
+			console.log(response.status)
+
+			if(response.status === 204){
+				getTodos();
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	useEffect(()=>{
+		getTodos()
+		
+	},[])
+
 	return (
 		<div className="text-center">
-            
-
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
+			<h1 className="display-1">TODOS</h1>
+			<input type="text" placeholder="What needs to be done?" onChange={onChange} onKeyDown={onKeyDown}></input>
+			<ListBox
+				state={state}
+				setState={setState}
+				deleteTodo={deleteTodo}
+			/>
 		</div>
 	);
 };
