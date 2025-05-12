@@ -6,12 +6,43 @@ const Home = () => {
 	const [state, setState] = useState({name: "", todos: []})
 	const [task, setTask] = useState("")
 
+	const createUser = async () => { // Funcion de crear el usuario si no existe
+		
+		try {
+			const response = await fetch ('https://playground.4geeks.com/todo/users/otazzu',{
+				method: 'POST',
+				headers: {
+					'Content-Type':'application/json'
+				},
+				body: JSON.stringify({
+					"name": "otazzu",
+					"id": 0
+				})
+			});
+
+			if(response.status === 201){
+				getTodos();
+			}
+
+		} catch (error) {
+			console.log(error)
+		}
+		
+	}
+
 	const getTodos = async () =>{
 		try {
 			const response = await fetch('https://playground.4geeks.com/todo/users/otazzu')
+
+			if(response.ok){
+
 			const data = await response.json()
 			console.log(data)
 			setState(data)
+
+			}else if(response.status === 404){//Si no existe el usuario
+				createUser();//Se crea el usuario
+			}
 		} catch (error) {
 			console.log(error)
 		}
