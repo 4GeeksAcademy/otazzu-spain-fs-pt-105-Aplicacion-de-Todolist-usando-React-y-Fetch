@@ -94,7 +94,7 @@ const Home = () => {
 				method: "DELETE"
 			});
 
-			console.log(response.status)
+			console.log(response.status, "borrado con exito")
 
 			if(response.status === 204){
 				getTodos();
@@ -103,6 +103,23 @@ const Home = () => {
 			console.log(error)
 		}
 	}
+
+	const deleteAll = async () =>{//Se borra el usuario para borrar todas sus tareas
+        console.log()
+		try {
+			const response = await fetch (`https://playground.4geeks.com/todo/users/otazzu`, {
+				method: "DELETE"
+			});
+
+			console.log(response.status, "borrado con exito")
+
+			if(response.status === 204){
+				getTodos();
+			}
+		} catch (error) {
+			console.log(error)
+		}
+    }
 
 	useEffect(()=>{
 		getTodos()
@@ -117,6 +134,7 @@ const Home = () => {
 				state={state}
 				setState={setState}
 				deleteTodo={deleteTodo}
+				deleteAll={deleteAll}
 			/>
 		</div>
 	);

@@ -12,6 +12,7 @@ export const ListBox = (props) => {
             ))}
         </ul>
         <li className="list-group-item text-muted task">Items: {props.state.todos.length}</li>
+        <button className="btn btn-sm btn-danger m-3" onClick={props.deleteAll}>Limpiar lista</button>
         </>
     )
 }
